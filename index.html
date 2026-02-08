@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>イヤリング市場分析 - 統合版</title>
+    <style>
+        :root {
+            --bg-color: #f5f5f5;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #e0e0e0;
+            --accent-color: #6366f1;
+            --accent-hover: #4f46e5;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+
+        .dark-mode {
+            --bg-color: #1a1a2e;
+            --card-bg: #16213e;
+            --text-color: #e0e0e0;
+            --border-color: #2a2a4a;
+            --accent-color: #818cf8;
+            --accent-hover: #6366f1;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            color: var(--accent-color);
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .exchange-display {
+            padding: 8px 12px;
+            background: var(--card-bg);
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .summary-card .label {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .summary-card .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            background: var(--card-bg);
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 14px;
+            color: var(--text-color);
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            background: var(--bg-color);
+        }
+
+        .tab.active {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .search-box {
+            width: 100%;
+            max-width: 400px;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--accent-color);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        th:hover {
+            background: var(--accent-hover);
+        }
+
+        tr:hover {
+            background: var(--bg-color);
+        }
+
+        .rank {
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .rank-1 { color: #ffd700; }
+        .rank-2 { color: #c0c0c0; }
+        .rank-3 { color: #cd7f32; }
+
+        .price {
+            font-weight: bold;
+            color: var(--success-color);
+        }
+
+        .limit {
+            color: var(--warning-color);
+            font-weight: bold;
+        }
+
+        .links {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .link-btn {
+            padding: 4px 10px;
+            font-size: 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .link-ebay {
+            background: #e53935;
+        }
+
+        .link-mercari {
+            background: #ff6b6b;
+        }
+
+        .check-cell {
+            width: 30px;
+        }
+
+        .check-cell input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checked-row {
+            opacity: 0.5;
+            text-decoration: line-through;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            margin: 25px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .vw-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .vw-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .vw-card h3 {
+            color: var(--accent-color);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .vw-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .vw-item:last-child {
+            border-bottom: none;
+        }
+
+        footer {
+            margin-top: 40px;
+            padding: 20px;
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 1.4rem;
+            }
+
+            th, td {
+                padding: 8px 10px;
+                font-size: 13px;
+            }
+
+            .links {
+                flex-direction: column;
+                gap: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>イヤリング市場分析</h1>
+            <div class="header-controls">
+                <div class="exchange-display">
+                    為替: <span id="exchangeRate">155</span>円/$
+                </div>
+                <button class="btn btn-primary" onclick="fetchExchangeRate()">為替取得</button>
+                <button class="btn btn-secondary" onclick="toggleDarkMode()">🌙 ダークモード</button>
+            </div>
+        </header>
+
+        <div class="summary-cards">
+            <div class="summary-card">
+                <div class="label">総データ数</div>
+                <div class="value">2,313件</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">総販売数</div>
+                <div class="value">2,490件</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">総売上</div>
+                <div class="value">$737,087</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">中央値</div>
+                <div class="value">$228</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">期間</div>
+                <div class="value" style="font-size: 1rem;">2025/02 ~ 2026/02</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('overview')">全体分析</button>
+            <button class="tab" onclick="showTab('highbrand')">ハイブランド</button>
+            <button class="tab" onclick="showTab('vw')">Vivienne Westwood</button>
+            <button class="tab" onclick="showTab('character')">キャラクター</button>
+            <button class="tab" onclick="showTab('recommend')">おすすめ出品順序</button>
+        </div>
+
+        <!-- 全体分析タブ -->
+        <div id="overview" class="tab-content active">
+            <h2 class="section-title">カテゴリ別販売実績</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>カテゴリ</th>
+                        <th>販売数</th>
+                        <th>中央値($)</th>
+                        <th>仕入上限(税込)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ハイブランド</td>
+                        <td>1,515</td>
+                        <td class="price">$315.00</td>
+                        <td class="limit">¥36,360</td>
+                    </tr>
+                    <tr>
+                        <td>その他</td>
+                        <td>679</td>
+                        <td class="price">$117.00</td>
+                        <td class="limit">¥11,808</td>
+                    </tr>
+                    <tr>
+                        <td>Vivienne Westwood</td>
+                        <td>174</td>
+                        <td class="price">$96.70</td>
+                        <td class="limit">¥9,290</td>
+                    </tr>
+                    <tr>
+                        <td>まとめ売り</td>
+                        <td>49</td>
+                        <td class="price">$40.27</td>
+                        <td class="limit">¥2,293</td>
+                    </tr>
+                    <tr>
+                        <td>キャラクター/コラボ</td>
+                        <td>38</td>
+                        <td class="price">$37.83</td>
+                        <td class="limit">¥1,990</td>
+                    </tr>
+                    <tr>
+                        <td>デザイナーブランド</td>
+                        <td>35</td>
+                        <td class="price">$93.60</td>
+                        <td class="limit">¥8,906</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ハイブランドタブ -->
+        <div id="highbrand" class="tab-content">
+            <h2 class="section-title">ハイブランド別販売実績</h2>
+            <input type="text" class="search-box" placeholder="ブランド名で検索..." onkeyup="filterTable(this, 'highbrand-table')">
+            <table id="highbrand-table">
+                <thead>
+                    <tr>
+                        <th class="check-cell"></th>
+                        <th>順位</th>
+                        <th>ブランド</th>
+                        <th onclick="sortTable('highbrand-table', 3)">販売数 ▼</th>
+                        <th onclick="sortTable('highbrand-table', 4)">中央値($)</th>
+                        <th>仕入上限</th>
+                        <th>リンク</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="chanel"></td>
+                        <td class="rank rank-1">1</td>
+                        <td>シャネル (CHANEL)</td>
+                        <td>857</td>
+                        <td class="price">$395.50</td>
+                        <td class="limit">¥46,280</td>
+                        <td class="links">
+                            <a href="https://www.ebay.com/sch/i.html?_nkw=chanel+earrings&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay Sold</a>
+                            <a href="https://jp.mercari.com/search?keyword=シャネル%20イヤリング&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="dior"></td>
+                        <td class="rank rank-2">2</td>
+                        <td>ディオール (DIOR)</td>
+                        <td>149</td>
+                        <td class="price">$166.43</td>
+                        <td class="limit">¥17,937</td>
+                        <td class="links">
+                            <a href="https://www.ebay.com/sch/i.html?_nkw=dior+earrings&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay Sold</a>
+                            <a href="https://jp.mercari.com/search?keyword=ディオール%20イヤリング&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="gucci"></td>
+                        <td class="rank rank-3">3</td>
+                        <td>グッチ (GUCCI)</td>
+                        <td>122</td>
+                        <td class="price">$200.44</td>
+                        <td class="limit">¥22,154</td>
+                        <td class="links">
+                            <a href="https://www.ebay.com/sch/i.html?_nkw=gucci+earrings&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay Sold</a>
+                            <a href="https://jp.mercari.com/search?keyword=グッチ%20イヤリング&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="hermes"></td>
+                        <td class="rank">4</td>
+                        <td>エルメス (HERMES)</td>
+                        <td>115</td>
+                        <td class="price">$220.00</td>
+                        <td class="limit">¥24,580</td>
+                        <td class="links">
+                            <a href="https://www.ebay.com/sch/i.html?_nkw=hermes+earrings&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay Sold</a>
+                            <a href="https://jp.mercari.com/search?keyword=エルメス%20イヤリング&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="lv"></td>
+                        <td class="rank">5</td>
+                        <td>ルイヴィトン (LOUIS VUITTON)</td>
+                        <td>106</td>
+                        <td class="price">$360.00</td>
+                        <td class="limit">¥41,939</td>
+                        <td class="links">
+                            <a href="https://www.ebay.com/sch/i.html?_nkw=louis+vuitton+earrings&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay Sold</a>
+                            <a href="https://jp.mercari.com/search?keyword=ルイヴィトン%20イヤリング&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="tiffany"></td>
+                        <td class="rank">6</td>
+                        <td>ティファニー (TIFFANY)</td>
+                        <td>62</td>
+                        <td class="price">$340.44</td>
+                        <td class="limit">¥39,514</td>
+                        <td class="links">
+                            <a href="https://www.ebay.com/sch/i.html?_nkw=tiffany+earrings&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay Sold</a>
+                            <a href="https://jp.mercari.com/search?keyword=ティファニー%20イヤリング&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="celine"></td>
+                        <td class="rank">7</td>
+                        <td>セリーヌ (CELINE)</td>
+                        <td>38</td>
+                        <td class="price">$203.23</td>
+                        <td class="limit">¥22,500</td>
+                        <td class="links">
+                            <a href="https://www.ebay.com/sch/i.html?_nkw=celine+earrings&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay Sold</a>
+                            <a href="https://jp.mercari.com/search?keyword=セリーヌ%20イヤリング&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="ferragamo"></td>
+                        <td class="rank">8</td>
+                        <td>フェラガモ (FERRAGAMO)</td>
+                        <td>26</td>
+                        <td class="price">$144.00</td>
+                        <td class="limit">¥15,156</td>
+                        <td class="links">
+                            <a href="https://www.ebay.com/sch/i.html?_nkw=ferragamo+earrings&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay Sold</a>
+                            <a href="https://jp.mercari.com/search?keyword=フェラガモ%20イヤリング&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="cartier"></td>
+                        <td class="rank">9</td>
+                        <td>カルティエ (CARTIER)</td>
+                        <td>17</td>
+                        <td class="price">$299.00</td>
+                        <td class="limit">¥34,376</td>
+                        <td class="links">
+                            <a href="https://www.ebay.com/sch/i.html?_nkw=cartier+earrings&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay Sold</a>
+                            <a href="https://jp.mercari.com/search?keyword=カルティエ%20イヤリング&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="bvlgari"></td>
+                        <td class="rank">10</td>
+                        <td>ブルガリ (BVLGARI)</td>
+                        <td>6</td>
+                        <td class="price">$1,999.44</td>
+                        <td class="limit">¥245,230</td>
+                        <td class="links">
+                            <a href="https://www.ebay.com/sch/i.html?_nkw=bvlgari+earrings&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay Sold</a>
+                            <a href="https://jp.mercari.com/search?keyword=ブルガリ%20イヤリング&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Vivienne Westwoodタブ -->
+        <div id="vw" class="tab-content">
+            <h2 class="section-title">Vivienne Westwood 詳細分析</h2>
+            <p style="margin-bottom: 20px; color: #888;">総販売数: 174件 / 中央値: $96.70 / 仕入上限: ¥9,290</p>
+
+            <div class="vw-grid">
+                <div class="vw-card">
+                    <h3>オーブサイズ別</h3>
+                    <div class="vw-item">
+                        <span>Standard Orb</span>
+                        <span><strong>101件</strong> / $95.90</span>
+                    </div>
+                    <div class="vw-item">
+                        <span>Unknown (オーブなし)</span>
+                        <span><strong>39件</strong> / $107.46</span>
+                    </div>
+                    <div class="vw-item">
+                        <span>Tiny Orb</span>
+                        <span><strong>23件</strong> / $89.99</span>
+                    </div>
+                    <div class="vw-item">
+                        <span>Mini Orb</span>
+                        <span><strong>7件</strong> / $119.99</span>
+                    </div>
+                    <div class="vw-item">
+                        <span>Petit Orb</span>
+                        <span><strong>3件</strong> / $89.00</span>
+                    </div>
+                    <div class="vw-item">
+                        <span>Small Orb</span>
+                        <span><strong>1件</strong> / $49.00</span>
+                    </div>
+                </div>
+
+                <div class="vw-card">
+                    <h3>モチーフ別</h3>
+                    <div class="vw-item">
+                        <span>パール (Pearl)</span>
+                        <span><strong>高回転</strong></span>
+                    </div>
+                    <div class="vw-item">
+                        <span>ハート (Heart)</span>
+                        <span><strong>人気</strong></span>
+                    </div>
+                    <div class="vw-item">
+                        <span>ラインストーン</span>
+                        <span><strong>高単価</strong></span>
+                    </div>
+                    <div class="vw-item">
+                        <span>ディアマンテ</span>
+                        <span><strong>希少</strong></span>
+                    </div>
+                    <div class="vw-item">
+                        <span>エナメル</span>
+                        <span><strong>定番</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="section-title">VW 人気商品</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="check-cell"></th>
+                        <th>商品名</th>
+                        <th>販売数</th>
+                        <th>価格($)</th>
+                        <th>リンク</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="vw1"></td>
+                        <td>SemiLong Pearl Earrings Silver White Orb</td>
+                        <td>14</td>
+                        <td class="price">$104.61</td>
+                        <td class="links">
+                            <a href="https://www.ebay.com/sch/i.html?_nkw=vivienne+westwood+pearl+orb+earrings&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay</a>
+                            <a href="https://jp.mercari.com/search?keyword=ヴィヴィアン%20パール%20オーブ%20イヤリング&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="vw2"></td>
+                        <td>Saturn Stud Earrings S925 Silver Nana Style</td>
+                        <td>6</td>
+                        <td class="price">$47.83</td>
+                        <td class="links">
+                            <a href="https://www.ebay.com/sch/i.html?_nkw=vivienne+westwood+saturn+earrings&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay</a>
+                            <a href="https://jp.mercari.com/search?keyword=ヴィヴィアン%20サターン%20イヤリング&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="vw3"></td>
+                        <td>Diamante Black Heart Orb Earrings Silver</td>
+                        <td>5</td>
+                        <td class="price">$92.11</td>
+                        <td class="links">
+                            <a href="https://www.ebay.com/sch/i.html?_nkw=vivienne+westwood+heart+orb+earrings&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay</a>
+                            <a href="https://jp.mercari.com/search?keyword=ヴィヴィアン%20ハート%20オーブ%20イヤリング&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="vw4"></td>
+                        <td>Semi Long Pearl Earrings Gold White Orb</td>
+                        <td>5</td>
+                        <td class="price">$98.98</td>
+                        <td class="links">
+                            <a href="https://www.ebay.com/sch/i.html?_nkw=vivienne+westwood+gold+pearl+earrings&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay</a>
+                            <a href="https://jp.mercari.com/search?keyword=ヴィヴィアン%20ゴールド%20パール%20イヤリング&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="vw5"></td>
+                        <td>Tiny Orb Earrings Silver Pink</td>
+                        <td>4</td>
+                        <td class="price">$89.99</td>
+                        <td class="links">
+                            <a href="https://www.ebay.com/sch/i.html?_nkw=vivienne+westwood+tiny+orb+earrings&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay</a>
+                            <a href="https://jp.mercari.com/search?keyword=ヴィヴィアン%20タイニー%20オーブ%20イヤリング&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- キャラクタータブ -->
+        <div id="character" class="tab-content">
+            <h2 class="section-title">キャラクター/コラボ</h2>
+            <p style="margin-bottom: 20px; color: #888;">総販売数: 38件 / 中央値: $37.83 / 仕入上限: ¥1,990</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th class="check-cell"></th>
+                        <th>ブランド/キャラクター</th>
+                        <th>販売数</th>
+                        <th>中央値($)</th>
+                        <th>リンク</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="pokemon"></td>
+                        <td>ポケモン (Pokemon Center)</td>
+                        <td>38</td>
+                        <td class="price">$37.83</td>
+                        <td class="links">
+                            <a href="https://www.ebay.com/sch/i.html?_nkw=pokemon+center+earrings&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay Sold</a>
+                            <a href="https://jp.mercari.com/search?keyword=ポケモンセンター%20イヤリング&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="section-title">ポケモン 人気商品</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="check-cell"></th>
+                        <th>商品名</th>
+                        <th>販売数</th>
+                        <th>価格($)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="poke1"></td>
+                        <td>Sinistcha Poltchageist Cafe Earrings</td>
+                        <td>4</td>
+                        <td class="price">$33.22</td>
+                    </tr>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="poke2"></td>
+                        <td>Klefki Earrings 102 Accessory</td>
+                        <td>3</td>
+                        <td class="price">$70.17</td>
+                    </tr>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="poke3"></td>
+                        <td>Klefki Earrings Charm</td>
+                        <td>3</td>
+                        <td class="price">$56.33</td>
+                    </tr>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="poke4"></td>
+                        <td>Slowpoke Face Pierced Earring</td>
+                        <td>2</td>
+                        <td class="price">$16.00</td>
+                    </tr>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="poke5"></td>
+                        <td>Dreepy Pierced Earrings</td>
+                        <td>2</td>
+                        <td class="price">$15.99</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- おすすめ出品順序タブ -->
+        <div id="recommend" class="tab-content">
+            <h2 class="section-title">おすすめ出品順序 TOP15</h2>
+            <p style="margin-bottom: 20px; color: #888;">スコア = 販売数 × 中央値（回転率と利益のバランス）</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th class="check-cell"></th>
+                        <th>順位</th>
+                        <th>ブランド</th>
+                        <th>販売数</th>
+                        <th>中央値($)</th>
+                        <th>仕入上限</th>
+                        <th>リンク</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="rec1"></td>
+                        <td class="rank rank-1">1</td>
+                        <td>シャネル</td>
+                        <td>860</td>
+                        <td class="price">$395.00</td>
+                        <td class="limit">¥46,280</td>
+                        <td class="links">
+                            <a href="https://www.ebay.com/sch/i.html?_nkw=chanel+earrings&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay</a>
+                            <a href="https://jp.mercari.com/search?keyword=シャネル%20イヤリング&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="rec2"></td>
+                        <td class="rank rank-2">2</td>
+                        <td>ルイヴィトン</td>
+                        <td>108</td>
+                        <td class="price">$360.00</td>
+                        <td class="limit">¥41,939</td>
+                        <td class="links">
+                            <a href="https://www.ebay.com/sch/i.html?_nkw=louis+vuitton+earrings&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay</a>
+                            <a href="https://jp.mercari.com/search?keyword=ルイヴィトン%20イヤリング&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="rec3"></td>
+                        <td class="rank rank-3">3</td>
+                        <td>エルメス</td>
+                        <td>116</td>
+                        <td class="price">$220.00</td>
+                        <td class="limit">¥24,580</td>
+                        <td class="links">
+                            <a href="https://www.ebay.com/sch/i.html?_nkw=hermes+earrings&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay</a>
+                            <a href="https://jp.mercari.com/search?keyword=エルメス%20イヤリング&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="rec4"></td>
+                        <td class="rank">4</td>
+                        <td>ティファニー</td>
+                        <td>62</td>
+                        <td class="price">$340.44</td>
+                        <td class="limit">¥39,514</td>
+                        <td class="links">
+                            <a href="https://www.ebay.com/sch/i.html?_nkw=tiffany+earrings&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay</a>
+                            <a href="https://jp.mercari.com/search?keyword=ティファニー%20イヤリング&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="rec5"></td>
+                        <td class="rank">5</td>
+                        <td>グッチ</td>
+                        <td>122</td>
+                        <td class="price">$200.44</td>
+                        <td class="limit">¥22,154</td>
+                        <td class="links">
+                            <a href="https://www.ebay.com/sch/i.html?_nkw=gucci+earrings&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay</a>
+                            <a href="https://jp.mercari.com/search?keyword=グッチ%20イヤリング&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="rec6"></td>
+                        <td class="rank">6</td>
+                        <td>ディオール</td>
+                        <td>149</td>
+                        <td class="price">$166.43</td>
+                        <td class="limit">¥17,937</td>
+                        <td class="links">
+                            <a href="https://www.ebay.com/sch/i.html?_nkw=dior+earrings&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay</a>
+                            <a href="https://jp.mercari.com/search?keyword=ディオール%20イヤリング&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="rec7"></td>
+                        <td class="rank">7</td>
+                        <td>セリーヌ</td>
+                        <td>38</td>
+                        <td class="price">$203.23</td>
+                        <td class="limit">¥22,500</td>
+                        <td class="links">
+                            <a href="https://www.ebay.com/sch/i.html?_nkw=celine+earrings&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay</a>
+                            <a href="https://jp.mercari.com/search?keyword=セリーヌ%20イヤリング&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="rec8"></td>
+                        <td class="rank">8</td>
+                        <td>ヴィヴィアン・ウエストウッド</td>
+                        <td>175</td>
+                        <td class="price">$96.69</td>
+                        <td class="limit">¥9,289</td>
+                        <td class="links">
+                            <a href="https://www.ebay.com/sch/i.html?_nkw=vivienne+westwood+earrings&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay</a>
+                            <a href="https://jp.mercari.com/search?keyword=ヴィヴィアン%20イヤリング&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="rec9"></td>
+                        <td class="rank">9</td>
+                        <td>フェラガモ</td>
+                        <td>26</td>
+                        <td class="price">$144.00</td>
+                        <td class="limit">¥15,156</td>
+                        <td class="links">
+                            <a href="https://www.ebay.com/sch/i.html?_nkw=ferragamo+earrings&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay</a>
+                            <a href="https://jp.mercari.com/search?keyword=フェラガモ%20イヤリング&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="check-cell"><input type="checkbox" class="row-check" data-id="rec10"></td>
+                        <td class="rank">10</td>
+                        <td>ブルガリ</td>
+                        <td>6</td>
+                        <td class="price">$1,999.44</td>
+                        <td class="limit">¥245,230</td>
+                        <td class="links">
+                            <a href="https://www.ebay.com/sch/i.html?_nkw=bvlgari+earrings&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay</a>
+                            <a href="https://jp.mercari.com/search?keyword=ブルガリ%20イヤリング&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <footer>
+            <p>イヤリング市場分析 | データ期間: 2025/02 - 2026/02 | 生成日: 2026-02-09</p>
+            <p>設定: 送料 ¥2,700 / 為替 155円/$ / 手数料 20%</p>
+        </footer>
+    </div>
+
+    <script>
+        // タブ切替
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // ダークモード切替
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+
+        // 為替取得
+        async function fetchExchangeRate() {
+            try {
+                const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+                const data = await response.json();
+                const rate = data.rates.JPY;
+                document.getElementById('exchangeRate').textContent = rate.toFixed(2);
+                updatePurchaseLimits(rate);
+                alert(`為替レート更新: 1USD = ${rate.toFixed(2)}円`);
+            } catch (error) {
+                alert('為替取得に失敗しました');
+            }
+        }
+
+        // 仕入上限更新
+        function updatePurchaseLimits(rate) {
+            document.querySelectorAll('.limit').forEach(cell => {
+                const row = cell.closest('tr');
+                const priceCell = row.querySelector('.price');
+                if (priceCell) {
+                    const price = parseFloat(priceCell.textContent.replace('$', '').replace(',', ''));
+                    const limit = Math.floor(price * rate * 0.8 - 2700);
+                    cell.textContent = `¥${limit.toLocaleString()}`;
+                }
+            });
+        }
+
+        // テーブル検索
+        function filterTable(input, tableId) {
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById(tableId);
+            const rows = table.querySelectorAll('tbody tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            });
+        }
+
+        // テーブルソート
+        function sortTable(tableId, columnIndex) {
+            const table = document.getElementById(tableId);
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+
+            rows.sort((a, b) => {
+                const aVal = parseFloat(a.cells[columnIndex].textContent.replace(/[$,¥]/g, '')) || 0;
+                const bVal = parseFloat(b.cells[columnIndex].textContent.replace(/[$,¥]/g, '')) || 0;
+                return bVal - aVal;
+            });
+
+            rows.forEach(row => tbody.appendChild(row));
+        }
+
+        // チェックボックス状態保存
+        function initCheckboxes() {
+            const saved = JSON.parse(localStorage.getItem('earringChecks') || '{}');
+
+            document.querySelectorAll('.row-check').forEach(checkbox => {
+                const id = checkbox.dataset.id;
+                if (saved[id]) {
+                    checkbox.checked = true;
+                    checkbox.closest('tr').classList.add('checked-row');
+                }
+
+                checkbox.addEventListener('change', function() {
+                    const row = this.closest('tr');
+                    if (this.checked) {
+                        row.classList.add('checked-row');
+                        saved[id] = true;
+                    } else {
+                        row.classList.remove('checked-row');
+                        delete saved[id];
+                    }
+                    localStorage.setItem('earringChecks', JSON.stringify(saved));
+                });
+            });
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            // ダークモード復元
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+
+            // チェックボックス初期化
+            initCheckboxes();
+        });
+    </script>
+</body>
+</html>
